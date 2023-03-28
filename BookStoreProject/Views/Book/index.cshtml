@@ -1,14 +1,15 @@
 ﻿@model List<Book>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BookStoreProject</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BookStoreProject.styles.css" asp-append-version="true" />
-</head>
-<body>
+
+<div class="col">
+    <form id="search-form" asp-controller="Books" asp-action="Search" method="get">
+        <div class="form-group">
+            <label for="search-input">Search:</label>
+            <input type="text" class="form-control" id="search-input" name="searchTerm" placeholder="Enter Book Title" style="width: 200px;">
+        </div>
+       
+    </form>
+</div>
+
 <table id="books-table" class="table">
     <thead>
         <tr>
@@ -22,13 +23,37 @@
         {
             <tr>
                 <td>@book.BookID</td>
-                <td>@book.BookTitle</td>               
+                <td>@book.BookTitle</td>
+                <td>@(book.IsBookReserved ? "Yes" : "No")</td>
+                <td>
+                    @if (!book.IsBookReserved)
+                    {
+                        <form method="post" action="@Url.Action("Reserve", new { id = book.BookID })">
+                            <button type="submit" class="btn btn-warning">Reserve</button>
+                        </form>
+                    }
+
+                    @if (book.IsBookReserved)
+                    {
+                        <form method="post" action="@Url.Action("UnReserve", new { id = book.BookID })">
+                            <button type="submit" class="btn btn-danger">UnReserve</button>
+                        </form>
+                    }
+                </td>
             </tr>
         }
     </tbody>
 </table>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-</body>
-</html>
+   
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#search-input").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#books-table tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+}
