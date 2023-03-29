@@ -44,7 +44,18 @@
         }
     </tbody>
 </table>
-   
+
+@if (!string.IsNullOrEmpty(TempData["message"] as string))
+{
+
+    <div class="modal-body">
+        <code style="color: red;">
+            @TempData["message"]
+        </code>
+    </div>
+
+
+}
 @section Scripts {
     <script>
         $(document).ready(function () {
